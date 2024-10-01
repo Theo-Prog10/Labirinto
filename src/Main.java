@@ -5,8 +5,7 @@ public class Main {
         Entrada input = new Entrada();
         Labirinto lista = new Labirinto();
         lista.setLab(input.preencher());
-        Entrada.printNestedList(lista.getLab());
-        lista.setInicio(0,0);
+        lista.setInicio(14,13);
         lista.solve();
     }
 }
