@@ -11,17 +11,50 @@ public class Labirinto {
     public void solve() {
         int[][] matriz = setMatriz();
         ArrayList<Integer> coordenadas;
+
+        //primeiro push
         if (matriz[inicio.get(0)][inicio.get(1)] == 1) {
             coordenadas = new ArrayList<Integer>();
             coordenadas.add(inicio.get(0));
             coordenadas.add(inicio.get(1));
             pilha.push(coordenadas);
             matriz[inicio.get(0)][inicio.get(1)] = 2;
+            redor(matriz,coordenadas);
         }
 
+        //while (coordenadas != this.inicio && )
 
+    }
 
+    public ArrayList<Integer> redor(int[][] matriz, ArrayList<Integer> coordenadas) {
+        int x = coordenadas.get(0);
+        int y = coordenadas.get(1);
+        ArrayList<Integer> coord = new ArrayList<>();
 
+        int valor;
+        int[][][] direcoes = {
+                {{-1, -1}, {-1, 0}, {-1, 0}},
+                {{ 0, -1}, { x, y}, { 0, 1}},
+                {{ 1, -1}, { 1, 0}, { 1, 1}}};
+
+        break2lacos:
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                System.out.println();
+                try {
+                    valor = matriz[x+direcoes[i][j][0]][y+direcoes[i][j][1]];
+                    if (valor == 1) {
+                        coord.add(x+direcoes[i][j][0]);
+                        coord.add(y+direcoes[i][j][1]);
+                        break break2lacos;
+                    }
+                }
+                catch(ArrayIndexOutOfBoundsException exception) {
+                    System.out.println("coordenadas não existem");
+                }
+            }
+        }
+        return coord;
     }
 
     public int[][] setMatriz() {
