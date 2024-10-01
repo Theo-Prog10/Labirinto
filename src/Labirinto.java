@@ -7,6 +7,7 @@ public class Labirinto {
     private ArrayList<Integer> inicio;
 
     Stack<Object> pilha = new Stack<>();
+    int blabla;
     
     public void solve() {
         int[][] matriz = setMatriz();
