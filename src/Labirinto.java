@@ -63,7 +63,7 @@ public class Labirinto {
                 if(labirinto[i][j] == -1) {
                     System.out.print("X ");
                 } else{
-                    System.out.print(labirinto[i][j] + " ");
+                    System.out.print("- ");
                 }
             }
             System.out.println();
