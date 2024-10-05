@@ -26,6 +26,7 @@ public class Entrada {
         } catch (FileNotFoundException e) {
             // Caso contrário, vai ler do teclado.
             this.input = new Scanner(System.in);
+            System.out.print("NAO LEU");
         }
     }
 
@@ -84,7 +85,7 @@ public class Entrada {
             linha = this.lerLinha("");
             //linha = this.lerLinha("linha: ");
         }
-    return lab;
+        return lab;
     }
 
     public static void printNestedList(ArrayList<ArrayList<Integer>> nestedList) {

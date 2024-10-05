@@ -1,137 +1,74 @@
-import java.sql.Array;
 import java.util.ArrayList;
 import java.util.Stack;
 
 public class Labirinto {
-    private ArrayList<ArrayList<Integer>> labirinto = new ArrayList<ArrayList<Integer>>();
-    private ArrayList<Integer> inicio;
 
-    Stack<Object> pilha = new Stack<>();
-    
-    public void solve() {
-        int[][] matriz = setMatriz();
-        ArrayList<Integer> coordenadas = new ArrayList<Integer>();
+    static class Posicao{
+        int x,y;
 
-        //primeiro push
-        if (matriz[inicio.get(0)][inicio.get(1)] == 1) {
-            coordenadas = new ArrayList<Integer>();
-            coordenadas.add(inicio.get(0));
-            coordenadas.add(inicio.get(1));
-            pilha.push(coordenadas);
-            matriz[inicio.get(0)][inicio.get(1)] = 2;
+        public Posicao(int x, int y){
+            this.x = x;
+            this.y = y;
         }
-
-        ArrayList<Integer> prox;
-        prox = redor(matriz,coordenadas,true);
-        ArrayList<Integer> aux;
-        boolean continua = true;
-        while (continua) {
-            aux = new ArrayList<>();
-            aux.add(prox.get(0));
-            aux.add(prox.get(1));
-
-            if (prox.get(2) == 1) {
-                pilha.push(aux);
-                matriz[prox.get(0)][prox.get(1)] = 2;
-            }
-            else if (prox.get(2) == 2) {
-                pilha.pop();
-                matriz[prox.get(0)][prox.get(1)] = 0;
-            }
-            else if (prox.get(2) == 0) {
-                continua = false;
-                printaMatriz(matriz);
-            }
-            prox = redor(matriz,aux,false);
-        }
-
     }
 
-    public ArrayList<Integer> redor(int[][] matriz, ArrayList<Integer> coordenadas, boolean primeiro) {
-        int x = coordenadas.get(0);
-        int y = coordenadas.get(1);
-        ArrayList<Integer> coord = new ArrayList<>();
+    public static boolean posicaoValida(int[][] labirinto, boolean[][]visitado,int x, int y){
+        return ( x>=0 && x < labirinto.length && y>=0 && y< labirinto[0].length && labirinto[x][y] == 1 & !visitado[x][y]);
+    }
 
-        int valor;
-        int[][][] direcoes = {
-                {{-1, -1}, {-1, 0}, {-1, 1}},
-                {{ 0, -1}, { 0, 0}, { 0, 1}},
-                {{ 1, -1}, { 1, 0}, { 1, 1}}};
+    public static boolean solve(int[][]labirinto, Posicao inicio, Posicao fim){
+        Stack<Posicao> pilha = new Stack<>();
+        pilha.push(inicio);
 
-        break2lacos:
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 3; j++) {
-                try {
-                    valor = matriz[x+direcoes[i][j][0]][y+direcoes[i][j][1]];
-                    if (valor == 1) {
-                        coord.add(x+direcoes[i][j][0]);
-                        coord.add(y+direcoes[i][j][1]);
-                        coord.add(1);
-                        return coord;
-                    }
+        boolean[][] visistado = new boolean[labirinto.length][labirinto[0].length];
+        visistado[inicio.x][inicio.y] = true;
+
+        Posicao[][] caminho = new Posicao[labirinto.length][labirinto[0].length];
+
+        int[] moviX = {-1,1,0,0,-1,-1,1,1};
+        int[] moviY = {0,0,-1,1,-1,1,-1,1};
+
+        while(!pilha.isEmpty()){
+            Posicao atual = pilha.pop();
+
+            //Checando se chegou no fim
+            if(atual.x == fim.x && atual.y == fim.y){
+                Posicao pos = atual;
+                while (pos!= null){
+                    labirinto[pos.x][pos.y] = -1;
+                    pos = caminho[pos.x][pos.y];
                 }
-                catch(ArrayIndexOutOfBoundsException exception) {
-                    if (!primeiro) {
-                        coordenadas.add(0);
-                        return coordenadas;
-                    }
-//                    else {
-//                        coordenadas.add(1);
-//                        return coordenadas;
-//                    }
+                imprimirLab(labirinto);
+                return true;
+            }
+            //Andando pela matriz
+            for (int i = 0; i < 8;i++){
+                int novoX = atual.x + moviX[i];
+                int novoY = atual.y + moviY[i];
+
+                if(posicaoValida(labirinto,visistado,novoX,novoY)){
+                    pilha.push(new Posicao(novoX,novoY));
+                    visistado[novoX][novoY] = true;
+                    caminho[novoX][novoY] = atual;
                 }
             }
         }
 
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 3; j++) {
-                valor = matriz[x+direcoes[i][j][0]][y+direcoes[i][j][1]];
-                if (valor == 2) {
-                    coord.add(x+direcoes[i][j][0]);
-                    coord.add(y+direcoes[i][j][1]);
-                    coord.add(2);
-                    return coord;
+        return false;
+    }
+
+    public static  void imprimirLab(int[][] labirinto) {
+        for ( int i = 0; i < labirinto.length; i++){
+            for ( int j = 0; j < labirinto[i].length; j++){
+                if(labirinto[i][j] == -1) {
+                    System.out.print("X ");
+                } else{
+                    System.out.print(labirinto[i][j] + " ");
                 }
-            }
-        }
-        coordenadas.add(0);
-        return coordenadas;
-    }
-
-    public int[][] setMatriz() {
-        int i = 0;
-        int j = 0;
-        int[][] matriz = new int[labirinto.size()][labirinto.getFirst().size()];
-        for (ArrayList<Integer> linha : labirinto) {
-            for (int num : linha) {
-                matriz[i][j++] = num;
-            }
-            i++;
-            j = 0;
-        }
-        return matriz;
-    }
-
-    public void setLab(ArrayList<ArrayList<Integer>> labirinto) {
-        this.labirinto = labirinto;
-    }
-    public ArrayList<ArrayList<Integer>> getLab() {
-        return this.labirinto;
-    }
-
-    public void setInicio(int x, int y) {
-        this.inicio = new ArrayList<Integer>();
-        this.inicio.add(x);
-        this.inicio.add(y);
-    }
-
-    public void printaMatriz(int[][] matriz) {
-        for (int k = 0; k < matriz.length; k++) {
-            for (int l = 0; l < matriz[k].length; l++) {
-                if (matriz[k][l] == 2) System.out.print("X ");
-                else System.out.print(matriz[k][l] + " ");
             }
             System.out.println();
         }
     }
 }
+
+
