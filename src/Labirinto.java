@@ -16,7 +16,7 @@ public class Labirinto {
         return ( x>=0 && x < labirinto.length && y>=0 && y< labirinto[0].length && labirinto[x][y] == 1 & !visitado[x][y]);
     }
 
-    public static boolean solve(int[][]labirinto, Posicao inicio, Posicao fim){
+    public static Stack<?> solve(int[][]labirinto, Posicao inicio, Posicao fim){
         Stack<Posicao> pilha = new Stack<>();
         pilha.push(inicio);
 
@@ -28,7 +28,10 @@ public class Labirinto {
         int[] moviX = {-1,1,0,0,-1,-1,1,1};
         int[] moviY = {0,0,-1,1,-1,1,-1,1};
 
+        Stack<Posicao> pilharetorno = new Stack<>();
+
         while(!pilha.isEmpty()){
+            pilharetorno.push(pilha.peek());
             Posicao atual = pilha.pop();
 
             //Checando se chegou no fim
@@ -39,7 +42,7 @@ public class Labirinto {
                     pos = caminho[pos.x][pos.y];
                 }
                 imprimirLab(labirinto);
-                return true;
+                return pilharetorno;
             }
             //Andando pela matriz
             for (int i = 0; i < 8;i++){
@@ -54,7 +57,7 @@ public class Labirinto {
             }
         }
 
-        return false;
+        return null;
     }
 
     public static  void imprimirLab(int[][] labirinto) {

@@ -1,7 +1,8 @@
 import java.util.ArrayList;
+import java.util.Stack;
 
 public class Main {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws InterruptedException {
 
         Entrada entrada = new Entrada();
         ArrayList<ArrayList<Integer>> labirintoList = entrada.preencher();
@@ -21,8 +22,10 @@ public class Main {
         Labirinto.Posicao inicio = new Labirinto.Posicao(14, 13); // Início do labirinto
         Labirinto.Posicao fim = new Labirinto.Posicao(9, 0);    // Fim do labirinto
 
-        if (Labirinto.solve(labirinto, inicio, fim)) {
+        Stack<Labirinto.Posicao> pilha = (Stack<Labirinto.Posicao>) Labirinto.solve(labirinto, inicio, fim);
+        if (pilha != null) {
             System.out.println("Caminho encontrado!");
+            Display display = new Display(labirinto, inicio, pilha);
         } else {
             System.out.println("Caminho não encontrado.");
         }
