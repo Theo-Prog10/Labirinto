@@ -47,7 +47,7 @@ public class Display extends JFrame {
         // Cria um timer que move o "jogador" a cada 500 milissegundos
         for (Object posicao : pilha) {
             moverJogador((ArrayList<Integer>) posicao);
-            TimeUnit.MILLISECONDS.sleep(500);
+            TimeUnit.MILLISECONDS.sleep(50);
         }
     }
 

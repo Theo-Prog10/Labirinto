@@ -34,12 +34,12 @@ public class Labirinto {
             if (prox.get(2) == 1) {
                 matriz[prox.get(0)][prox.get(1)] = 2;
             }
-            else if (prox.get(2) == 2) {
-                matriz[prox.get(0)][prox.get(1)] = 3;
+            else if (prox.get(2) > 1) {
+                matriz[prox.get(0)][prox.get(1)] = prox.get(2) + 1;
             }
             else if (prox.get(2) == 0) {
                 continua = false;
-                printaMatriz(matriz);
+                //printaMatriz(matriz);
             }
             prox = redor(matriz,aux,false);
         }
@@ -80,8 +80,8 @@ public class Labirinto {
             if (valor == 2) {
                 coord.add(x+moviX[i]);
                 coord.add(y+moviY[i]);
-                coord.add(2);
-                matriz[x][y] = 3;
+                coord.add(valor);
+                matriz[x][y] = valor + 1;
                 return coord;
             }
         }
