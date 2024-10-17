@@ -1,20 +1,18 @@
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.Random;
-import java.util.Stack;
 import java.util.concurrent.TimeUnit;
 
 public class Display extends JFrame {
-    private int[][] labirinto;
-    private JPanel[][] cells;
+    private final int[][] labirinto;
+    private final JPanel[][] cells;
     private int playerRow, playerCol;
 
-    public Display(int[][] labirinto, ArrayList<Integer> inicio, Stack<?> pilha) throws InterruptedException {
+    public Display(int[][] labirinto, ArrayList<Integer> inicio, ArrayList<ArrayList<Integer>> historico) throws InterruptedException {
         this.labirinto = labirinto;
         this.cells = new JPanel[labirinto.length][labirinto[0].length];
         initUI(inicio);
-        iniciarAnimacao(pilha);
+        iniciarAnimacao(historico);
     }
 
     private void initUI(ArrayList<Integer> inicio) {
@@ -43,11 +41,11 @@ public class Display extends JFrame {
         setVisible(true);
     }
 
-    private void iniciarAnimacao(Stack pilha) throws InterruptedException {
+    private void iniciarAnimacao(ArrayList<ArrayList<Integer>> historico) throws InterruptedException {
         // Cria um timer que move o "jogador" a cada 500 milissegundos
-        for (Object posicao : pilha) {
-            moverJogador((ArrayList<Integer>) posicao);
-            TimeUnit.MILLISECONDS.sleep(50);
+        for (ArrayList<Integer> posicao : historico) {
+            moverJogador(posicao);
+            TimeUnit.MILLISECONDS.sleep(20);
         }
     }
 
@@ -61,4 +59,3 @@ public class Display extends JFrame {
         cells[playerRow][playerCol].setBackground(Color.RED);
     }
 }
-

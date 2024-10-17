@@ -1,101 +1,81 @@
-import java.sql.Array;
 import java.util.ArrayList;
 import java.util.Stack;
 
 public class Labirinto {
-    private ArrayList<ArrayList<Integer>> labirinto = new ArrayList<ArrayList<Integer>>();
+    private int[][] labirinto = null;
     private ArrayList<Integer> inicio;
 
-    Stack<Object> pilha = new Stack<>();
-    
-    public void solve() throws InterruptedException {
-        int[][] matriz = setMatriz();
-        ArrayList<Integer> coordenadas = new ArrayList<Integer>();
+    Stack<ArrayList<Integer>> pilha = new Stack<>();
 
-        //primeiro push
-        if (matriz[inicio.get(0)][inicio.get(1)] == 1) {
-            coordenadas = new ArrayList<Integer>();
-            coordenadas.add(inicio.get(0));
-            coordenadas.add(inicio.get(1));
-            pilha.push(coordenadas);
-            matriz[inicio.get(0)][inicio.get(1)] = 2;
+    public void solve() {
+        boolean[][] matriz_boolean = setMatrizBoolean();
+        ArrayList<ArrayList<Integer>> historico = new ArrayList<>();
+
+        try {
+            if (matriz_boolean[this.inicio.get(0)][this.inicio.get(1)]) {
+                pilha.push(this.inicio);
+                historico.add(pilha.peek());
+
+                ArrayList<Integer> prox;
+                prox = redor(matriz_boolean, pilha.peek(), true);
+                while (prox != this.inicio) {
+                    if (prox != null) {
+                        pilha.push(prox);
+                        historico.add(prox);
+                        matriz_boolean[prox.get(0)][prox.get(1)] = false;
+                    } else {
+                        historico.add(pilha.pop());
+                    }
+                    prox = redor(matriz_boolean, historico.getLast(), false);
+                }
+
+                new Display(this.labirinto, inicio, historico);
+            } else {
+                System.out.println("Coordenadas (" + this.inicio.get(0) + "," + this.inicio.get(1) + ") inválidas pois representam uma parede.");
+            }
+        } catch (Exception e) {
+            System.out.println("Coordenadas (" + this.inicio.get(0) + "," + this.inicio.get(1) + ") inválidas.");
+            System.out.println("X deve ser <= " + (this.labirinto.length - 1) + " e Y deve ser <= " + (this.labirinto[0].length - 1) + ".");
         }
-
-        ArrayList<Integer> prox;
-        prox = redor(matriz,coordenadas,true);
-        ArrayList<Integer> aux;
-        boolean continua = true;
-        while (continua) {
-            aux = new ArrayList<>();
-            aux.add(prox.get(0));
-            aux.add(prox.get(1));
-            pilha.push(aux);
-
-            if (prox.get(2) == 1) {
-                matriz[prox.get(0)][prox.get(1)] = 2;
-            }
-            else if (prox.get(2) > 1) {
-                matriz[prox.get(0)][prox.get(1)] = prox.get(2) + 1;
-            }
-            else if (prox.get(2) == 0) {
-                continua = false;
-                //printaMatriz(matriz);
-            }
-            prox = redor(matriz,aux,false);
-        }
-
-        Display display = new Display(matriz,inicio,pilha);
     }
 
-    public ArrayList<Integer> redor(int[][] matriz, ArrayList<Integer> coordenadas, boolean primeiro) {
+    public ArrayList<Integer> redor(boolean[][] matriz, ArrayList<Integer> coordenadas, boolean primeiro) {
         int x = coordenadas.get(0);
         int y = coordenadas.get(1);
         ArrayList<Integer> coord = new ArrayList<>();
 
-        int valor;
-        int[] moviX = {-1,1,0,0,-1,-1,1,1};
-        int[] moviY = {0,0,-1,1,-1,1,-1,1};
-
+        boolean valor;
+        int[] moviX = {-1, 1, 0, 0, -1, -1, 1, 1};
+        int[] moviY = {0, 0, -1, 1, -1, 1, -1, 1};
 
         for (int i = 0; i < 8; i++) {
             try {
-                valor = matriz[x+moviX[i]][y+moviY[i]];
-                if (valor == 1) {
-                    coord.add(x+moviX[i]);
-                    coord.add(y+moviY[i]);
-                    coord.add(1);
+                valor = matriz[x + moviX[i]][y + moviY[i]];
+                if (valor) {
+                    coord.add(x + moviX[i]);
+                    coord.add(y + moviY[i]);
                     return coord;
                 }
-            }
-            catch(ArrayIndexOutOfBoundsException exception) {
+            } catch (ArrayIndexOutOfBoundsException exception) {
                 if (!primeiro) {
-                    coordenadas.add(0);
-                    return coordenadas;
+                    return this.inicio;
                 }
             }
         }
-
-        for (int i = 0; i < 8; i++) {
-            valor = matriz[x+moviX[i]][y+moviY[i]];
-            if (valor == 2) {
-                coord.add(x+moviX[i]);
-                coord.add(y+moviY[i]);
-                coord.add(valor);
-                matriz[x][y] = valor + 1;
-                return coord;
-            }
-        }
-        coordenadas.add(0);
-        return coordenadas;
+        return null;
     }
 
-    public int[][] setMatriz() {
+    public boolean[][] setMatrizBoolean() {
         int i = 0;
         int j = 0;
-        int[][] matriz = new int[labirinto.size()][labirinto.getFirst().size()];
-        for (ArrayList<Integer> linha : labirinto) {
+        boolean[][] matriz = new boolean[labirinto.length][labirinto[0].length];
+        for (int[] linha : labirinto) {
             for (int num : linha) {
-                matriz[i][j++] = num;
+                if (num == 1) {
+                    matriz[i][j++] = true;
+                } else {
+                    matriz[i][j++] = false;
+                }
             }
             i++;
             j = 0;
@@ -103,24 +83,25 @@ public class Labirinto {
         return matriz;
     }
 
-    public void setLab(ArrayList<ArrayList<Integer>> labirinto) {
+    public void setLab(int[][] labirinto) {
         this.labirinto = labirinto;
     }
-    public ArrayList<ArrayList<Integer>> getLab() {
+
+    public int[][] getLab() {
         return this.labirinto;
     }
 
     public void setInicio(int x, int y) {
-        this.inicio = new ArrayList<Integer>();
+        this.inicio = new ArrayList<>();
         this.inicio.add(x);
         this.inicio.add(y);
     }
 
     public void printaMatriz(int[][] matriz) {
-        for (int k = 0; k < matriz.length; k++) {
-            for (int l = 0; l < matriz[k].length; l++) {
-                if (matriz[k][l] == 2) System.out.print("X ");
-                else System.out.print(matriz[k][l] + " ");
+        for (int[] linha : matriz) {
+            for (int anInt : linha) {
+                if (anInt == 2) System.out.print("X ");
+                else System.out.print(anInt + " ");
             }
             System.out.println();
         }
