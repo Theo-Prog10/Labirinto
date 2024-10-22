@@ -5,6 +5,7 @@ public class Main {
         lista.setLab(input.preencher());
         lista.setInicio(16, 1); //labirinto 1.csv
         //lista.setInicio(100, 63); //labirinto 2.csv
+        //lista.setInicio(0, 65); //labirinto 2.csv
         lista.solve();
     }
 }
