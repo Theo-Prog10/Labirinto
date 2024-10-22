@@ -15,6 +15,7 @@ public class Labirinto {
             if (matriz_boolean[this.inicio.get(0)][this.inicio.get(1)]) {
                 pilha.push(this.inicio);
                 historico.add(pilha.peek());
+                matriz_boolean[this.inicio.get(0)][this.inicio.get(1)] = false;
 
                 ArrayList<Integer> prox;
                 prox = redor(matriz_boolean, pilha.peek(), true);
